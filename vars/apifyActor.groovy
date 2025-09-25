@@ -16,12 +16,6 @@ def call(Map cfg = [:]) {
       NPM_CONFIG_FUND = 'false'
       NPM_CONFIG_AUDIT = 'false'
     }
-    triggers {
-      def schedule = (cfg.get('pollSchedule') ?: '').trim()
-      if (schedule) {
-        pollSCM(schedule)
-      }
-    }
     stages {
       stage('Checkout') {
         steps {
