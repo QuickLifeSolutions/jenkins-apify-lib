@@ -10,13 +10,18 @@ def call(Map cfg = [:]) {
     }
     environment {
       GIT_SSH_COMMAND = 'ssh -o StrictHostKeyChecking=no'
-      NODE_IMAGE = cfg.get('nodeImage', 'node:20-alpine')
+      NODE_IMAGE = cfg.get('nodeImage', 'node:20-bullseye')
       DOCKER_ARGS = cfg.get('dockerArgs', '-v $HOME/.npm:/root/.npm')
       LOCK_RESOURCE = "apify/${env.JOB_NAME.replaceAll('/', '_')}"
       NPM_CONFIG_FUND = 'false'
       NPM_CONFIG_AUDIT = 'false'
     }
-    triggers { pollSCM(cfg.get('pollSchedule', '')) }
+    triggers {
+      def schedule = (cfg.get('pollSchedule') ?: '').trim()
+      if (schedule) {
+        pollSCM(schedule)
+      }
+    }
     stages {
       stage('Checkout') {
         steps {
